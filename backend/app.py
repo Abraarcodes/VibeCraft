@@ -38,7 +38,7 @@ def stream_response(response) -> Iterator[str]:
 
 def call_model(prompt: str):
     try:
-        print("\n🟡 Calling Gemini model with prompt snippet:", prompt[:200])  # print first 200 chars
+        print("\n🟡 Calling Gemini model with prompt snippet:", prompt)  # print first 200 chars
         response = model.generate_content(prompt)
         print("✅ Model response received.")
         return response.text
@@ -50,7 +50,7 @@ def call_model(prompt: str):
 def generate_template():
     try:
         prompt = request.json.get("prompt", "")
-        print("\n📩 Received template prompt:", prompt[:100])  # First 100 chars
+        print("\n📩 Received template prompt:", prompt)  # First 100 chars
 
         if not prompt:
             return jsonify({"message": "Prompt is required"}), 400

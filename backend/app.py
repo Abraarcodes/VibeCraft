@@ -6,15 +6,15 @@ from typing import Iterator
 import os
 import sys
 
-
 sys.path.append(os.path.dirname(os.path.abspath(__file__ + "/..")))
+
 # Setup Flask App
 load_dotenv()
 app = Flask(__name__)
 CORS(app, resources={r"/*": {
     "origins": [
-        "http://localhost:5173",  # for local dev
-        "https://vibeforge.netlify.app"  # for live frontend
+        "http://localhost:5173",
+        "https://vibeforge.netlify.app"
     ]
 }})
 
@@ -36,24 +36,28 @@ def stream_response(response) -> Iterator[str]:
         if chunk.text:
             yield chunk.text
 
-
 def call_model(prompt: str):
     try:
+        print("\n🟡 Calling Gemini model with prompt snippet:", prompt[:200])  # print first 200 chars
         response = model.generate_content(prompt)
+        print("✅ Model response received.")
         return response.text
     except Exception as e:
+        print("❌ Error during model call:", str(e))
         raise RuntimeError(f"Model error: {str(e)}")
-
 
 @app.route("/template", methods=["POST"])
 def generate_template():
     try:
         prompt = request.json.get("prompt", "")
+        print("\n📩 Received template prompt:", prompt[:100])  # First 100 chars
+
         if not prompt:
             return jsonify({"message": "Prompt is required"}), 400
 
         project_type_prompt = f"Is the project React or Node? Determine based on the following description return in just one word nothing else: {prompt}"
         project_type_result = call_model(project_type_prompt).strip().lower()
+        print("🧠 Detected project type:", project_type_result)
 
         if project_type_result not in ["react", "node"]:
             return jsonify({"message": "Invalid project type determined"}), 400
@@ -69,6 +73,8 @@ def generate_template():
         if not structure_response:
             return jsonify({"message": "No project structure returned"}), 500
 
+        print("📦 Generated project structure successfully.")
+
         return jsonify({
             "prompts": [
                 BASE_PROMPT,
@@ -82,8 +88,8 @@ def generate_template():
         })
 
     except Exception as e:
+        print("❌ Error in /template:", str(e))
         return jsonify({"message": "Internal server error", "details": str(e)}), 500
-
 
 @app.route("/chat", methods=["POST"])
 def chat():
@@ -94,6 +100,7 @@ def chat():
         if not isinstance(messages, list):
             return jsonify({"message": "Messages must be an array"}), 400
 
+        print("\n📩 Chat request received. Number of messages:", len(messages))
         combined_prompt = "\n".join(f"{msg['role']}: {msg['content']}" for msg in messages)
         system_prompt_str = getSystemPrompt()
         final_prompt = f"{system_prompt_str}\n\n{combined_prompt}"
@@ -102,8 +109,8 @@ def chat():
         return jsonify({"response": response_text})
 
     except Exception as e:
+        print("❌ Error in /chat:", str(e))
         return jsonify({"message": "Internal server error", "details": str(e)}), 500
-
 
 if __name__ == "__main__":
     app.run(port=5050, debug=True)

@@ -11,7 +11,12 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__ + "/..")))
 # Setup Flask App
 load_dotenv()
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
+CORS(app, resources={r"/*": {
+    "origins": [
+        "http://localhost:5173",  # for local dev
+        "https://vibeforge.netlify.app"  # for live frontend
+    ]
+}})
 
 # Configure Google Gemini API
 GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")

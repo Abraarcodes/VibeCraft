@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Aurora animation keyframes */
+@keyframes aurora {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Optional: custom animation class if needed */
+.animate-aurora {
+    animation: aurora 50s linear infinite;
+}
+
+@keyframes glowMove {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    100% {
+        background-position: 200% 50%;
+    }
+}
+
+.animate-glow {
+    background: linear-gradient(90deg, #00ff88, transparent, #00ff88);
+    background-size: 200% 200%;
+    animation: glowMove 4s linear infinite;
+    filter: blur(4px);
+    opacity: 0.4;
+    z-index: -1;
+    border-radius: 1rem;
+}

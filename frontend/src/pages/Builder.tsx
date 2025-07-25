@@ -185,7 +185,7 @@ return (
       {/* Header */}
       <header className="bg-[#0d1b2a]/80 border-b border-[#25354a] px-6 py-4 backdrop-blur-xl shadow-md">
         <h1 className="text-2xl font-bold text-[#e0f2fe]">Vibe Forge</h1>
-        {/* <p className="text-sm text-[#94a3b8] mt-1">Prompt: {prompt}</p> */}
+        <p className="text-sm text-[#94a3b8] mt-1">Prompt: {prompt}</p>
       </header>
 
       {/* Body */}

@@ -10,6 +10,7 @@ import google.generativeai as genai
 from prompts import BASE_PROMPT, getSystemPrompt
 from defaults.node import base_prompt as nodeBasePrompt
 from defaults.react import base_prompt as reactBasePrompt
+import html  
 
 
 
@@ -66,6 +67,47 @@ def template():
         return jsonify({"error": str(e)}), 500
     
     
+# def clean_gemini_response(text: str) -> str:
+#     import re
+
+#     # General HTML cleanup
+#     text = re.sub(r'<!\[CDATA\[|\]\]>', '', text)
+#     text = re.sub(r'<![A-Za-z]+\[?', '', text)
+#     text = re.sub(r'<!--|-->', '', text)
+#     text = text.replace('&nbsp;', ' ').replace('&amp;', '&')
+#     text = text.replace('<br>', '\n').replace('<br/>', '\n').replace('<br />', '\n')
+
+#     # Fix malformed closing tags
+#     text = re.sub(r'</BuildifyArtifac[^>]*', '</BuildifyArtifact>', text)
+
+#     # Function to clean code inside BuildifyAction
+#     def clean_inside_buildify(block_text: str) -> str:
+#         # Remove <code> and </code>
+#         block_text = re.sub(r'<code>\s*', '', block_text)
+#         block_text = re.sub(r'\s*</code>', '', block_text)
+
+#         # Remove ``` fenced code blocks
+#         block_text = re.sub(r'```(?:[a-zA-Z]*)', '', block_text)
+#         block_text = re.sub(r'```', '', block_text)
+
+#         return block_text.strip()
+
+#     # Apply cleaning to every BuildifyAction block
+#     text = re.sub(
+#         r'(<BuildifyAction[^>]*>)([\s\S]*?)(</BuildifyAction>)',
+#         lambda m: m.group(1) + clean_inside_buildify(m.group(2)) + m.group(3),
+#         text
+#     )
+
+#     # Remove stray <code> blocks outside of BuildifyActions
+#     text = re.sub(r'<code>\s*', '', text)
+#     text = re.sub(r'\s*</code>', '', text)
+
+#     return text.strip()
+
+
+
+
 def clean_gemini_response(text: str) -> str:
     import re
 
@@ -102,7 +144,11 @@ def clean_gemini_response(text: str) -> str:
     text = re.sub(r'<code>\s*', '', text)
     text = re.sub(r'\s*</code>', '', text)
 
+    # ✅ Final unescaping of HTML entities like &lt; to <, etc.
+    text = html.unescape(text)
+
     return text.strip()
+
 
 
 @app.route('/chat', methods=['POST'])
